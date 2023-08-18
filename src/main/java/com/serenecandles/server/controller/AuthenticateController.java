@@ -21,16 +21,16 @@ import java.security.Principal;
 @CrossOrigin("*")
 public class AuthenticateController {
     @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
     private UserDetailsSericeImpl userDetailsSerice;
-
+    @Autowired
+    private AuthenticationManager authenticationManager;
     @Autowired
     private JwtUtil jwtUtil;
 
+
     @PostMapping("/generate-token")
-    public ResponseEntity<?> generateToken(@RequestBody JwtRequest jwtRequest) throws Exception {
+    public JwtResponse generateToken(@RequestBody JwtRequest jwtRequest) throws Exception {
+//        return jwtService.createJwtToker(jwtRequest);
         try{
             this.authenticate(jwtRequest.getUsername(),jwtRequest.getPassword());
         }
@@ -41,7 +41,7 @@ public class AuthenticateController {
         ////////////user is authenticated
         UserDetails userDetails = this.userDetailsSerice.loadUserByUsername(jwtRequest.getUsername());
         String token = this.jwtUtil.generateToken(userDetails);
-        return ResponseEntity.ok(new JwtResponse(token));
+        return ResponseEntity.ok(new JwtResponse(token)).getBody();
     }
 
 

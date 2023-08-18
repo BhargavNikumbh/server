@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.util.*;
 
 @RestController
-@RequestMapping("/admin-user")
 @CrossOrigin("*")
 public class ProductController {
     @Autowired
@@ -29,6 +28,7 @@ public class ProductController {
     private ProductServiceImpl productService;
 
     @PostMapping(value={"/product"}, consumes={MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<?> addProduct(@RequestPart("product")Product product,
                                         @RequestPart("imageFile")ArrayList<MultipartFile> file){
         try{
@@ -57,8 +57,9 @@ public class ProductController {
     }
 
     @GetMapping("/product")
-    public List<Product> getProducts(){
-        return productService.getProducts();
+    public List<Product> getProducts(@RequestParam(defaultValue = "0") int pageNumber,
+                                     @RequestParam(defaultValue = "") String searchKey){
+        return productService.getProducts(pageNumber, searchKey);
     }
 
     @GetMapping("/product/{productId}")
@@ -67,9 +68,21 @@ public class ProductController {
     }
 
     @DeleteMapping("/deleteProduct/{productId}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public void deleteProduct(@PathVariable("productId") Long productId){
         this.productService.deleteProduct(productId);
     }
+    @GetMapping({"/getProductDetails/{isSingleProductCheckout}/{productId}"})
+    @PreAuthorize("hasAuthority('NORMAL')")
+    public List<Product> getProductDetails(@PathVariable(name="isSingleProductCheckout") boolean isSingleProductCheckout,
+                                  @PathVariable(name="productId") Long productId){
+        return productService.getProductDetails(isSingleProductCheckout, productId);
+    }
 
+    @GetMapping("/product/category/{categoryId}")
+    @PreAuthorize("hasAuthority('NORMAL')")
+    public List<Product> getProductsByCategoryId(@PathVariable("categoryId") Long categoryId){
+        return productService.getProductByCategoryId(categoryId);
+    }
 
 }

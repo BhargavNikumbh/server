@@ -7,7 +7,11 @@ import java.util.Optional;
 
 public interface ProductService {
     public Product createProduct(Product product) throws Exception;
-    public List<Product> getProducts();
+    public List<Product> getProducts(int pageNumber, String serachKey);
     public void deleteProduct(Long productId);
     public Product getProductDetailsById(Long productId);
+    public List<Product> getProductDetails(boolean isSingleProductCheckout, Long productId);
+
+    public List<Product> getProductByCategoryId(Long categoryId);
+
 }

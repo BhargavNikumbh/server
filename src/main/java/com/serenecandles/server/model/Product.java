@@ -33,6 +33,7 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long productId;
     private String productname;
+    @Column(length = 2000)
     private String productDescription;
     private int productQuantity;
 

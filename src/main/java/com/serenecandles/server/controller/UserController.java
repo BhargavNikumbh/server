@@ -4,7 +4,9 @@ import com.serenecandles.server.model.Role;
 import com.serenecandles.server.model.User;
 import com.serenecandles.server.model.UserRole;
 import com.serenecandles.server.service.UserService;
+import com.serenecandles.server.util.OtpService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +20,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private OtpService otpService;
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
@@ -52,4 +57,5 @@ public class UserController {
     public void deleteUser(@PathVariable("userId") Long userId){
         this.userService.deleteUser(userId);
     }
+
 }

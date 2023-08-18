@@ -7,6 +7,8 @@ import com.serenecandles.server.repo.ProductRepository;
 import com.serenecandles.server.service.CategoryService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
@@ -38,10 +40,15 @@ public class CategoryServiceImpl implements CategoryService  {
     }
 
     @Override
-    public List<Category> getAllCategories() {
-        List<Category> categories = new ArrayList<>();
-        categoryRepository.findAll().forEach(category->categories.add(category));
-        return categories;
+    public List<Category> getAllCategories(int pageNumber, String searchKey) {
+        Pageable pageable = PageRequest.of(pageNumber, 10);
+        if(searchKey.equals("")){
+            List<Category> categories = new ArrayList<>();
+            categoryRepository.findAll(pageable).forEach(category->categories.add(category));
+            return categories;
+        }else{
+            return (List<Category>)categoryRepository.findByCategorynameContainingIgnoreCaseOrCategorydescriptionContainingIgnoreCase(searchKey, searchKey, pageable);
+        }
     }
 
     @Override
@@ -58,7 +65,7 @@ public class CategoryServiceImpl implements CategoryService  {
     }
 
     @Override
-    public Category getCategoryByCategoryId(Long categoryId) {
+    public Category getCategoryByCategoryId( Long categoryId) {
         return this.categoryRepository.findById(categoryId).get();
     }
 

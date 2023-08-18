@@ -2,6 +2,7 @@ package com.serenecandles.server.controller;
 
 import com.serenecandles.server.model.Category;
 import com.serenecandles.server.repo.ImageRepository;
+import com.serenecandles.server.service.CategoryService;
 import com.serenecandles.server.service.impl.CategoryServiceImpl;
 import com.serenecandles.server.util.ImageUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,7 @@ public class CategoryController {
     private ImageRepository imageRepository;
 
     @PostMapping(value = {"/category"}, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<?> addCategory(@RequestPart("category") Category category,
                                          @RequestPart("imageFile") ArrayList<MultipartFile> file) throws Exception {
         try{
@@ -57,11 +59,13 @@ public class CategoryController {
     }
 
     @GetMapping("/category")
-    public List<Category> getAllCategories() {
-        return categoryServiceImpl.getAllCategories();
+    public List<Category> getAllCategories(@RequestParam(defaultValue = "0") int pageNumber,
+                                           @RequestParam(defaultValue = "") String searchKey) {
+        return categoryServiceImpl.getAllCategories(pageNumber, searchKey);
     }
 
     @DeleteMapping("/deleteCategory/{categoryId}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<?> deleteCategoryDetails(@PathVariable("categoryId") Long categoryId){
         boolean isDeleted = this.categoryServiceImpl.deleteCategoryDetails(categoryId);
         if(isDeleted)

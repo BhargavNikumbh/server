@@ -10,6 +10,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -17,10 +18,11 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-
 @Entity
 @Table(name="users")
 public class User implements UserDetails {
+
+    private static final long OTP_VALIDATAION_DURATION = 5*60*1000; //5 minutes
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -30,7 +32,13 @@ public class User implements UserDetails {
     private String firstName;
     private String lastName;
     private String email;
+    private String oneTimeEmailPassword;
+    private Date emailOTPRequestedTime;
+    private boolean isEmailVerified = false;
     private String phone;
+    private String oneTimePhonePassword;
+    private Date phoneOTPRequestedTime;
+    private boolean isPhoneVerified = false;
     private boolean enabled = true;
     private String address;
 
@@ -145,6 +153,20 @@ public class User implements UserDetails {
 
     @Override
     public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    public boolean isOTPRequired(){
+        if(this.getOneTimeEmailPassword() == null){
+            return false;
+        }
+        long currentTimeInMillis = System.currentTimeMillis();
+        long otpRequestedTimeInMillis = this.getEmailOTPRequestedTime().getTime();
+
+        if(otpRequestedTimeInMillis + OTP_VALIDATAION_DURATION < currentTimeInMillis){
+            //OTP expires
+            return false;
+        }
         return true;
     }
 }
